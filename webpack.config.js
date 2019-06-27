@@ -16,14 +16,17 @@ module.exports = {
     rules: [
         {
             test:/\.js|jsx$/, // 普通
-            // exclude: /node_modules/,
+            exclude: /node_modules/,
             include: path.resolve("src"),
             use:{
                 loader: 'babel-loader',
                 options: {// 用babel-loader把es6转es5
                     presets: ['@babel/preset-env','@babel/preset-react'],
-                }
-                
+                },
+                plugins:[
+                  ["@babel/plugin-proposal-decorators", { "legacy": true }],
+                  ["@babel/plugin-proposal-class-properties", { "loose": true }]//处理装饰器
+                ]
             }
         },
       {
@@ -35,18 +38,20 @@ module.exports = {
         loader: "style!css!less"
       },
       {
-
         test:/\.scss$/,
-    
         loaders:['style-loader','css-loader','sass-loader']
-    
      },
       {
         test: /\.(png|svg|jpg|gif|woff|woff2|eot|ttf)$/,
-        use:[{
-            loader:'url-loader'
-        }]
-       }  
+        use:{
+          loader:'url-loader',
+          options:{
+              limit:200*1024,//图片小于200k使用base64转化 //否则用file-loader来产生真实的图片
+              outputPath:'/img/',
+              publicPath:'http:/www.hundsun.com'//只对图片进行处理
+          }
+        }
+      }  
     ]
   },
   plugins: [
